@@ -1,1 +1,41 @@
+     #Main menu algorithm
+1.	The program starts.
+2.	A main menu is shown to the user.
+3.	The user is asked to choose a role:
+•	Passenger
+•	Driver
+•	Exit
+4.	The program reads the user’s choice.
+5.	If Passenger is selected, the passenger menu is opened.
+6.	If Driver is selected, the driver menu is opened.
+7.	The program keeps running until the user chooses to exit.
+8.	The program ends.
+                  #Passenger Side Algorithm
+1.	The passenger menu is displayed on the screen.
+2.	The passenger selects an option from the menu.
+3.	Depending on the selected option, the passenger can:
+•	View available routes and vehicles.
+•	Check how many seats are available.
+•	Book a seat if seats are available.
+•	Cancel a booking.
+4.	After performing an action, the menu is shown again.
+5.	This process repeats until the passenger exits the menu.
+
+
+            #Driver Side Algorithm
+1.	The driver menu is displayed.
+2.	The driver selects an option from the menu.
+3.	Depending on the selected option, the driver can:
+•	Add or update vehicle information.
+•	Enter or change route details.
+•	Update seat availability.
+•	View passenger bookings.
+4.	After completing the task, the driver menu is displayed again.
+5.	The process continues until the driver exits.
+
+                  #Seat Booking Logic
+1.	The passenger selects a route.
+2.	The system checks whether seats are available.
+3.	If seats are available, the booking is confirmed and seat count is updated.
+4.	If seats are not available, the system shows a message that booking is not possible.
 
