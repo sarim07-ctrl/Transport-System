@@ -4,10 +4,12 @@
 using namespace std;
 
 const int MAX_VEHICLES = 10;
+const int MAX_TIMES = 3;
 
 struct Vehicle {
     string name;
     string route;
+    string times[MAX_TIMES];
     int totalSeats;
     int bookedSeats;
 };
@@ -19,39 +21,75 @@ int vehicleCount = 0;
 void loadSampleData() {
     vehicleCount = 3;
 
-    vehicles[0] = {"Bus1", "Islamabad-Lahore", 40, 5};
-    vehicles[1] = {"Bus2", "Islamabad-Peshawar", 35, 10};
-    vehicles[2] = {"Van1", "Islamabad-Rawalpindi", 15, 3};
+    vehicles[0] = {"Bus1", "Islamabad - Lahore",
+                   {"9:00 AM", "1:00 PM", "6:00 PM"},
+                   40, 5};
+
+    vehicles[1] = {"Bus2", "Islamabad - Peshawar",
+                   {"8:00 AM", "12:00 PM", "5:00 PM"},
+                   35, 10};
+
+    vehicles[2] = {"Van1", "Islamabad - Rawalpindi",
+                   {"7:30 AM", "11:00 AM", "4:00 PM"},
+                   15, 3};
 }
 
 // Display vehicles
 void viewVehicles() {
-    cout << "\nAvailable Vehicles:\n";
+    cout << "\nAvailable Routes:\n";
     for (int i = 0; i < vehicleCount; i++) {
         cout << i + 1 << ". " << vehicles[i].name
-             << " - " << vehicles[i].route
-             << " | Available Seats: "
+             << " | Route: " << vehicles[i].route
+             << " | Seats Available: "
              << vehicles[i].totalSeats - vehicles[i].bookedSeats << endl;
     }
 }
 
-// Book seat
+// Book seat with route, time & payment
 void bookSeat() {
-    int choice;
+    int choice, timeChoice;
+    char payment;
+
     viewVehicles();
-    cout << "Enter vehicle number to book: ";
+    cout << "\nSelect vehicle number: ";
     cin >> choice;
     choice--;
 
-    if (choice >= 0 && choice < vehicleCount) {
-        if (vehicles[choice].bookedSeats < vehicles[choice].totalSeats) {
-            vehicles[choice].bookedSeats++;
-            cout << "Seat booked successfully!\n";
-        } else {
-            cout << "No seats available.\n";
-        }
+    if (choice < 0 || choice >= vehicleCount) {
+        cout << "Invalid vehicle selection.\n";
+        return;
+    }
+
+    cout << "\nAvailable Times:\n";
+    for (int i = 0; i < MAX_TIMES; i++) {
+        cout << i + 1 << ". " << vehicles[choice].times[i] << endl;
+    }
+
+    cout << "Select time: ";
+    cin >> timeChoice;
+    timeChoice--;
+
+    if (timeChoice < 0 || timeChoice >= MAX_TIMES) {
+        cout << "Invalid time selection.\n";
+        return;
+    }
+
+    if (vehicles[choice].bookedSeats >= vehicles[choice].totalSeats) {
+        cout << "No seats available.\n";
+        return;
+    }
+
+    cout << "Has payment been paid? (y/n): ";
+    cin >> payment;
+
+    if (payment == 'y' || payment == 'Y') {
+        vehicles[choice].bookedSeats++;
+        cout << "\n✅ Booking Confirmed!\n";
+        cout << "Vehicle: " << vehicles[choice].name << endl;
+        cout << "Route: " << vehicles[choice].route << endl;
+        cout << "Time: " << vehicles[choice].times[timeChoice] << endl;
     } else {
-        cout << "Invalid selection.\n";
+        cout << "\n❌ Booking cancelled (Payment not paid).\n";
     }
 }
 
@@ -83,7 +121,7 @@ void passengerMenu() {
         cout << "1. View Routes\n";
         cout << "2. Book Seat\n";
         cout << "3. Cancel Booking\n";
-        cout << "4. Back to Main Menu\n";
+        cout << "4. Back\n";
         cout << "Enter choice: ";
         cin >> choice;
 
@@ -99,6 +137,7 @@ void passengerMenu() {
 
 int main() {
     loadSampleData();
+
     int choice;
     do {
         cout << "\n=== Transport Booking System (Console) ===\n";
@@ -109,7 +148,7 @@ int main() {
 
         switch (choice) {
             case 1: passengerMenu(); break;
-            case 2: cout << "Program ended.\n"; break;
+            case 2: cout << "Program terminated.\n"; break;
             default: cout << "Invalid choice.\n";
         }
     } while (choice != 2);
