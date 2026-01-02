@@ -1,55 +1,41 @@
     FILE 1 
-#include "mainwindow.h"
-#include <QApplication>
+#ifndef DATA_H
+#define DATA_H
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return a.exec();
-}
+#include <QString>
+
+struct Bus {
+    QString driverName;
+    QString license;
+    QString busNumber;
+    QString busType;
+    QString route;
+    QString timing;
+    int totalSeats;
+    int bookedSeats;
+};
+
+extern Bus buses[20];
+extern int busCount;
+
+#endif
+
     FILE 2 
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <string>
+#include "passengerwindow.h"
+#include "driverwindow.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
-
-struct Vehicle {
-    std::string name;
-    std::string route;
-    int totalSeats;
-    int bookedSeats;
-};
-
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
-
 public:
     MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
-
-private slots:
-    void on_viewButton_clicked();
-    void on_bookButton_clicked();
-    void on_cancelButton_clicked();
-
-private:
-    Ui::MainWindow *ui;
-
-    Vehicle vehicles[10];
-    int vehicleCount;
-
-    void loadSampleData();
 };
 
 #endif
+
 
     FILE 3 
 #include "mainwindow.h"
@@ -120,4 +106,182 @@ void MainWindow::on_cancelButton_clicked()
     }
 }
      FILE 4
-mainwindow.ui
+#include "mainwindow.h"
+#include <QPushButton>
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+{
+    setWindowTitle("Transport System");
+    setFixedSize(300, 200);
+
+    QPushButton *passengerBtn = new QPushButton("Passenger", this);
+    QPushButton *driverBtn = new QPushButton("Driver", this);
+
+    passengerBtn->setGeometry(80, 50, 140, 40);
+    driverBtn->setGeometry(80, 110, 140, 40);
+
+    connect(passengerBtn, &QPushButton::clicked, this, [](){
+        PassengerWindow *p = new PassengerWindow();
+        p->show();
+    });
+
+    connect(driverBtn, &QPushButton::clicked, this, [](){
+        DriverWindow *d = new DriverWindow();
+        d->show();
+    });
+}
+   FILE 5
+#ifndef DRIVERWINDOW_H
+#define DRIVERWINDOW_H
+
+#include <QWidget>
+
+class DriverWindow : public QWidget {
+    Q_OBJECT
+public:
+    DriverWindow(QWidget *parent = nullptr);
+
+private slots:
+    void submitBus();
+};
+
+#endif
+FILE 6
+ #include "driverwindow.h"
+#include "data.h"
+#include <QVBoxLayout>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QPushButton>
+#include <QMessageBox>
+
+DriverWindow::DriverWindow(QWidget *parent)
+    : QWidget(parent)
+{
+    setWindowTitle("Driver Registration");
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+
+    QLineEdit *name = new QLineEdit();
+    QLineEdit *license = new QLineEdit();
+    QLineEdit *busNo = new QLineEdit();
+    QLineEdit *type = new QLineEdit();
+    QLineEdit *route = new QLineEdit();
+    QLineEdit *time = new QLineEdit();
+    QSpinBox *seats = new QSpinBox();
+    QPushButton *submit = new QPushButton("Submit");
+
+    name->setPlaceholderText("Driver Name");
+    license->setPlaceholderText("License Number");
+    busNo->setPlaceholderText("Bus Number");
+    type->setPlaceholderText("Bus Type (AC / Non-AC)");
+    route->setPlaceholderText("Route");
+    time->setPlaceholderText("Timing (8:00 - 12:00)");
+
+    seats->setMaximum(60);
+
+    layout->addWidget(name);
+    layout->addWidget(license);
+    layout->addWidget(busNo);
+    layout->addWidget(type);
+    layout->addWidget(route);
+    layout->addWidget(time);
+    layout->addWidget(seats);
+    layout->addWidget(submit);
+
+    connect(submit, &QPushButton::clicked, this, [=]() {
+        if (busCount >= 20) return;
+
+        buses[busCount++] = {
+            name->text(),
+            license->text(),
+            busNo->text(),
+            type->text(),
+            route->text(),
+            time->text(),
+            seats->value(),
+            0
+        };
+
+        QMessageBox::information(this, "Success", "Bus Registered Successfully");
+        close();
+    });
+}
+
+
+
+FILE 7
+
+#ifndef PASSENGERWINDOW_H
+#define PASSENGERWINDOW_H
+
+#include <QWidget>
+
+class PassengerWindow : public QWidget {
+    Q_OBJECT
+public:
+    PassengerWindow(QWidget *parent = nullptr);
+
+private slots:
+    void bookSeat();
+};
+
+#endif
+FILE 8 
+#include "passengerwindow.h"
+#include "data.h"
+#include <QVBoxLayout>
+#include <QListWidget>
+#include <QPushButton>
+#include <QMessageBox>
+
+QListWidget *list;
+
+PassengerWindow::PassengerWindow(QWidget *parent)
+    : QWidget(parent)
+{
+    setWindowTitle("Passenger Booking");
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    list = new QListWidget();
+    QPushButton *book = new QPushButton("Book Seat");
+
+    for (int i = 0; i < busCount; i++) {
+        list->addItem(
+            buses[i].busNumber + " | " +
+            buses[i].route + " | Seats: " +
+            QString::number(buses[i].totalSeats - buses[i].bookedSeats)
+        );
+    }
+
+    layout->addWidget(list);
+    layout->addWidget(book);
+
+    connect(book, &QPushButton::clicked, this, &PassengerWindow::bookSeat);
+}
+
+void PassengerWindow::bookSeat() {
+    int row = list->currentRow();
+    if (row < 0) return;
+
+    if (buses[row].bookedSeats < buses[row].totalSeats) {
+        buses[row].bookedSeats++;
+        QMessageBox::information(this, "Booked", "Seat Booked Successfully");
+    } else {
+        QMessageBox::warning(this, "Full", "No Seats Available");
+    }
+}
+ FILE 9
+ #include "mainwindow.h"
+#include <QApplication>
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+    return a.exec();
+}
+
+
