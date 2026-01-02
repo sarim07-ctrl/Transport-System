@@ -1,157 +1,125 @@
 #include <iostream>
 #include <string>
-
 using namespace std;
 
-const int MAX_VEHICLES = 10;
-const int MAX_TIMES = 3;
+const int MAX = 10;
 
-struct Vehicle {
-    string name;
+/* ---------- STRUCTURES ---------- */
+struct Bus {
+    string driverName;
+    string cnic;
+    string license;
+    string busNumber;
+    string busType;
     string route;
-    string times[MAX_TIMES];
+    string departTime;
+    string arriveTime;
     int totalSeats;
     int bookedSeats;
 };
 
-Vehicle vehicles[MAX_VEHICLES];
-int vehicleCount = 0;
+Bus buses[MAX];
+int busCount = 0;
 
-// Load sample data
-void loadSampleData() {
-    vehicleCount = 3;
+/* ---------- DRIVER FUNCTIONS ---------- */
+void registerDriver() {
+    if (busCount >= MAX) {
+        cout << "\nMaximum buses registered.\n";
+        return;
+    }
 
-    vehicles[0] = {"Bus1", "Islamabad - Lahore",
-                   {"9:00 AM", "1:00 PM", "6:00 PM"},
-                   40, 5};
+    Bus b;
+    cin.ignore();
 
-    vehicles[1] = {"Bus2", "Islamabad - Peshawar",
-                   {"8:00 AM", "12:00 PM", "5:00 PM"},
-                   35, 10};
+    cout << "\n--- Driver Registration ---\n";
+    cout << "Driver Name: ";
+    getline(cin, b.driverName);
 
-    vehicles[2] = {"Van1", "Islamabad - Rawalpindi",
-                   {"7:30 AM", "11:00 AM", "4:00 PM"},
-                   15, 3};
+    cout << "CNIC: ";
+    getline(cin, b.cnic);
+
+    cout << "Driving License No: ";
+    getline(cin, b.license);
+
+    cout << "Bus Number: ";
+    getline(cin, b.busNumber);
+
+    cout << "Bus Type (AC / Non-AC): ";
+    getline(cin, b.busType);
+
+    cout << "Route: ";
+    getline(cin, b.route);
+
+    cout << "Departure Time: ";
+    getline(cin, b.departTime);
+
+    cout << "Arrival Time: ";
+    getline(cin, b.arriveTime);
+
+    cout << "Total Seat Capacity: ";
+    cin >> b.totalSeats;
+
+    b.bookedSeats = 0;
+
+    buses[busCount++] = b;
+    cout << "\nBus registered successfully!\n";
 }
 
-// Display vehicles
-void viewVehicles() {
-    cout << "\nAvailable Routes:\n";
-    for (int i = 0; i < vehicleCount; i++) {
-        cout << i + 1 << ". " << vehicles[i].name
-             << " | Route: " << vehicles[i].route
-             << " | Seats Available: "
-             << vehicles[i].totalSeats - vehicles[i].bookedSeats << endl;
+void driverMenu() {
+    int choice;
+    do {
+        cout << "\n--- Driver Menu ---\n";
+        cout << "1. Register Bus\n";
+        cout << "2. View My Buses\n";
+        cout << "3. Back\n";
+        cout << "Choice: ";
+        cin >> choice;
+
+        if (choice == 1) registerDriver();
+        else if (choice == 2) {
+            for (int i = 0; i < busCount; i++) {
+                cout << "\nBus " << i + 1 << endl;
+                cout << "Driver: " << buses[i].driverName << endl;
+                cout << "Bus Number: " << buses[i].busNumber << endl;
+                cout << "Route: " << buses[i].route << endl;
+                cout << "Timing: " << buses[i].departTime
+                     << " - " << buses[i].arriveTime << endl;
+                cout << "Seats: "
+                     << buses[i].totalSeats - buses[i].bookedSeats
+                     << "/" << buses[i].totalSeats << endl;
+            }
+        }
+    } while (choice != 3);
+}
+
+/* ---------- PASSENGER FUNCTIONS ---------- */
+void viewBuses() {
+    if (busCount == 0) {
+        cout << "\nNo buses available.\n";
+        return;
+    }
+
+    for (int i = 0; i < busCount; i++) {
+        cout << "\nBus " << i + 1 << endl;
+        cout << "Bus Number: " << buses[i].busNumber << endl;
+        cout << "Type: " << buses[i].busType << endl;
+        cout << "Route: " << buses[i].route << endl;
+        cout << "Time: " << buses[i].departTime
+             << " - " << buses[i].arriveTime << endl;
+        cout << "Seats Available: "
+             << buses[i].totalSeats - buses[i].bookedSeats << endl;
     }
 }
 
-// Book seat with route, time & payment
 void bookSeat() {
-    int choice, timeChoice;
-    char payment;
+    int bus, seats;
+    cout << "Select Bus Number: ";
+    cin >> bus;
+    bus--;
 
-    viewVehicles();
-    cout << "\nSelect vehicle number: ";
-    cin >> choice;
-    choice--;
-
-    if (choice < 0 || choice >= vehicleCount) {
-        cout << "Invalid vehicle selection.\n";
+    if (bus < 0 || bus >= busCount) {
+        cout << "Invalid bus.\n";
         return;
     }
 
-    cout << "\nAvailable Times:\n";
-    for (int i = 0; i < MAX_TIMES; i++) {
-        cout << i + 1 << ". " << vehicles[choice].times[i] << endl;
-    }
-
-    cout << "Select time: ";
-    cin >> timeChoice;
-    timeChoice--;
-
-    if (timeChoice < 0 || timeChoice >= MAX_TIMES) {
-        cout << "Invalid time selection.\n";
-        return;
-    }
-
-    if (vehicles[choice].bookedSeats >= vehicles[choice].totalSeats) {
-        cout << "No seats available.\n";
-        return;
-    }
-
-    cout << "Has payment been paid? (y/n): ";
-    cin >> payment;
-
-    if (payment == 'y' || payment == 'Y') {
-        vehicles[choice].bookedSeats++;
-        cout << "\n✅ Booking Confirmed!\n";
-        cout << "Vehicle: " << vehicles[choice].name << endl;
-        cout << "Route: " << vehicles[choice].route << endl;
-        cout << "Time: " << vehicles[choice].times[timeChoice] << endl;
-    } else {
-        cout << "\n❌ Booking cancelled (Payment not paid).\n";
-    }
-}
-
-// Cancel booking
-void cancelBooking() {
-    int choice;
-    viewVehicles();
-    cout << "Enter vehicle number to cancel booking: ";
-    cin >> choice;
-    choice--;
-
-    if (choice >= 0 && choice < vehicleCount) {
-        if (vehicles[choice].bookedSeats > 0) {
-            vehicles[choice].bookedSeats--;
-            cout << "Booking cancelled successfully.\n";
-        } else {
-            cout << "No booking to cancel.\n";
-        }
-    } else {
-        cout << "Invalid selection.\n";
-    }
-}
-
-// Passenger menu
-void passengerMenu() {
-    int choice;
-    do {
-        cout << "\n--- Passenger Menu ---\n";
-        cout << "1. View Routes\n";
-        cout << "2. Book Seat\n";
-        cout << "3. Cancel Booking\n";
-        cout << "4. Back\n";
-        cout << "Enter choice: ";
-        cin >> choice;
-
-        switch (choice) {
-            case 1: viewVehicles(); break;
-            case 2: bookSeat(); break;
-            case 3: cancelBooking(); break;
-            case 4: cout << "Returning...\n"; break;
-            default: cout << "Invalid choice.\n";
-        }
-    } while (choice != 4);
-}
-
-int main() {
-    loadSampleData();
-
-    int choice;
-    do {
-        cout << "\n=== Transport Booking System (Console) ===\n";
-        cout << "1. Passenger\n";
-        cout << "2. Exit\n";
-        cout << "Enter choice: ";
-        cin >> choice;
-
-        switch (choice) {
-            case 1: passengerMenu(); break;
-            case 2: cout << "Program terminated.\n"; break;
-            default: cout << "Invalid choice.\n";
-        }
-    } while (choice != 2);
-
-    return 0;
-}
+    cout << "Num
