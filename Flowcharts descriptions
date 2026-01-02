@@ -1,0 +1,54 @@
+                    #Main Menu Flowchart Description
+
+•	This flowchart explains how the program starts and shows the main options to the user.
+•	
+When the program begins, the main menu is displayed. The user is asked to select one option from Passenger, Driver, or Exit.
+
+•	If the Passenger option is chosen, the program opens the passenger menu.
+•	
+If the Driver option is selected, the driver menu is shown.
+•	
+If the user selects Exit, the program stops running.
+
+•	After completing any passenger or driver task, the program comes back to the main menu. 
+•	This process keeps repeating until the user decides to exit.
+
+
+
+                  #Passenger Menu Flowchart Description
+•	The passenger menu flowchart shows the options available for a passenger.
+
+•	Once the passenger menu is displayed, the user can choose to view routes, check seat availability, book a seat, or cancel a booking.
+
+•	When an option is selected, the program performs the required action. After the task is completed, the passenger menu is displayed again.
+
+•	If the passenger selects the option to go back, control returns to the main menu.
+•	This flow allows the passenger to use multiple features without restarting the program.
+
+
+
+
+                     #Seat Booking Flowchart Description
+•	This flowchart describes how the seat booking process works.
+
+The process starts when the passenger selects a route. After that, the system checks whether seats are available or not.
+•	If seats are available, the booking is completed successfully and the number of available seats is reduced. A confirmation message is shown to the user.
+
+•	If seats are not available, the system shows a message that booking cannot be done.
+
+•	After the booking process, the passenger is returned to the passenger menu.
+
+
+
+                     #Driver Menu Flowchart Description
+
+•	The driver menu flowchart explains the tasks that can be performed by the driver.
+
+•	After the driver menu is displayed, the driver can add or update vehicle information, manage route details, update seat availability, or view passenger bookings.
+
+•	Based on the selected option, the program performs the related task. Once the task is completed, the driver menu is shown again.
+
+•	If the driver chooses to return, the program goes back to the main menu.
+
+•	This design helps the driver manage transport information easily during program execution.
+
