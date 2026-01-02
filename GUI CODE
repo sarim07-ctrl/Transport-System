@@ -1,26 +1,28 @@
-    FILE 1 
+/**************** FILE 1: data.h ****************/
 #ifndef DATA_H
 #define DATA_H
 
 #include <QString>
 
+// Structure to store bus and driver information
 struct Bus {
-    QString driverName;
-    QString license;
-    QString busNumber;
-    QString busType;
-    QString route;
-    QString timing;
-    int totalSeats;
-    int bookedSeats;
+    QString driverName;   // Name of the driver
+    QString license;      // Driving license number
+    QString busNumber;    // Unique bus number
+    QString busType;      // AC / Non-AC
+    QString route;        // Bus route (e.g., Islamabad - Lahore)
+    QString timing;       // Departure and arrival timing
+    int totalSeats;       // Total seats on bus
+    int bookedSeats;      // Seats already booked
 };
 
+// Global array of buses and current count
 extern Bus buses[20];
 extern int busCount;
 
 #endif
 
-    FILE 2 
+/**************** FILE 2: mainwindow.h ****************/
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -28,33 +30,35 @@ extern int busCount;
 #include "passengerwindow.h"
 #include "driverwindow.h"
 
+// MainWindow serves as the central menu for the transport system
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr); // Constructor to setup UI
 };
 
 #endif
 
-
-    FILE 3 
+/**************** FILE 3: mainwindow.cpp ****************/
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 
+// Constructor: sets up UI elements and loads initial sample data
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    loadSampleData();
+    loadSampleData(); // Preload some buses for testing
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    delete ui; // Clean up UI memory
 }
 
+// Loads sample buses and populates combobox for selection
 void MainWindow::loadSampleData()
 {
     vehicleCount = 3;
@@ -63,11 +67,13 @@ void MainWindow::loadSampleData()
     vehicles[1] = {"Bus2", "Islamabad-Peshawar", 35, 10};
     vehicles[2] = {"Van1", "Islamabad-Rawalpindi", 15, 3};
 
+    // Add bus names to combobox for passengers to select
     for (int i = 0; i < vehicleCount; i++) {
         ui->comboBox->addItem(QString::fromStdString(vehicles[i].name));
     }
 }
 
+// Displays available buses and seats in a message box
 void MainWindow::on_viewButton_clicked()
 {
     QString info;
@@ -82,6 +88,7 @@ void MainWindow::on_viewButton_clicked()
     QMessageBox::information(this, "Available Routes", info);
 }
 
+// Handles booking a seat for the selected bus
 void MainWindow::on_bookButton_clicked()
 {
     int index = ui->comboBox->currentIndex();
@@ -94,6 +101,7 @@ void MainWindow::on_bookButton_clicked()
     }
 }
 
+// Handles canceling a seat for the selected bus
 void MainWindow::on_cancelButton_clicked()
 {
     int index = ui->comboBox->currentIndex();
@@ -105,50 +113,57 @@ void MainWindow::on_cancelButton_clicked()
         QMessageBox::warning(this, "Error", "No booking to cancel.");
     }
 }
-     FILE 4
+
+/**************** FILE 4: mainwindow_customUI.cpp ****************/
 #include "mainwindow.h"
 #include <QPushButton>
 
+// Main menu window with Passenger and Driver buttons
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     setWindowTitle("Transport System");
-    setFixedSize(300, 200);
+    setFixedSize(300, 200); // Fixed window size
 
+    // Create buttons
     QPushButton *passengerBtn = new QPushButton("Passenger", this);
     QPushButton *driverBtn = new QPushButton("Driver", this);
 
-    passengerBtn->setGeometry(80, 50, 140, 40);
+    passengerBtn->setGeometry(80, 50, 140, 40); // Set position & size
     driverBtn->setGeometry(80, 110, 140, 40);
 
+    // Connect buttons to open new windows
     connect(passengerBtn, &QPushButton::clicked, this, [](){
         PassengerWindow *p = new PassengerWindow();
-        p->show();
+        p->show(); // Open passenger booking window
     });
 
     connect(driverBtn, &QPushButton::clicked, this, [](){
         DriverWindow *d = new DriverWindow();
-        d->show();
+        d->show(); // Open driver registration window
     });
 }
-   FILE 5
+
+/**************** FILE 5: driverwindow.h ****************/
 #ifndef DRIVERWINDOW_H
 #define DRIVERWINDOW_H
 
 #include <QWidget>
 
+// Driver registration window
 class DriverWindow : public QWidget {
     Q_OBJECT
 public:
     DriverWindow(QWidget *parent = nullptr);
 
 private slots:
-    void submitBus();
+    void submitBus(); // Slot for submit button (optional)
 };
 
 #endif
-FILE 6
- #include "driverwindow.h"
+
+/**************** FILE 6: driverwindow.cpp ****************/
+#include "driverwindow.h"
 #include "data.h"
 #include <QVBoxLayout>
 #include <QLineEdit>
@@ -156,6 +171,7 @@ FILE 6
 #include <QPushButton>
 #include <QMessageBox>
 
+// Constructor: creates input fields and submit button
 DriverWindow::DriverWindow(QWidget *parent)
     : QWidget(parent)
 {
@@ -163,6 +179,7 @@ DriverWindow::DriverWindow(QWidget *parent)
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 
+    // Input fields for driver & bus details
     QLineEdit *name = new QLineEdit();
     QLineEdit *license = new QLineEdit();
     QLineEdit *busNo = new QLineEdit();
@@ -172,15 +189,16 @@ DriverWindow::DriverWindow(QWidget *parent)
     QSpinBox *seats = new QSpinBox();
     QPushButton *submit = new QPushButton("Submit");
 
+    // Placeholder text for guidance
     name->setPlaceholderText("Driver Name");
     license->setPlaceholderText("License Number");
     busNo->setPlaceholderText("Bus Number");
     type->setPlaceholderText("Bus Type (AC / Non-AC)");
     route->setPlaceholderText("Route");
     time->setPlaceholderText("Timing (8:00 - 12:00)");
+    seats->setMaximum(60); // Max seats allowed
 
-    seats->setMaximum(60);
-
+    // Add widgets to layout
     layout->addWidget(name);
     layout->addWidget(license);
     layout->addWidget(busNo);
@@ -190,8 +208,9 @@ DriverWindow::DriverWindow(QWidget *parent)
     layout->addWidget(seats);
     layout->addWidget(submit);
 
+    // Connect submit button to lambda for saving bus
     connect(submit, &QPushButton::clicked, this, [=]() {
-        if (busCount >= 20) return;
+        if (busCount >= 20) return; // Prevent overflow
 
         buses[busCount++] = {
             name->text(),
@@ -201,34 +220,33 @@ DriverWindow::DriverWindow(QWidget *parent)
             route->text(),
             time->text(),
             seats->value(),
-            0
+            0 // Initially no seats booked
         };
 
         QMessageBox::information(this, "Success", "Bus Registered Successfully");
-        close();
+        close(); // Close window after registration
     });
 }
 
-
-
-FILE 7
-
+/**************** FILE 7: passengerwindow.h ****************/
 #ifndef PASSENGERWINDOW_H
 #define PASSENGERWINDOW_H
 
 #include <QWidget>
 
+// Passenger booking window
 class PassengerWindow : public QWidget {
     Q_OBJECT
 public:
     PassengerWindow(QWidget *parent = nullptr);
 
 private slots:
-    void bookSeat();
+    void bookSeat(); // Slot to handle seat booking
 };
 
 #endif
-FILE 8 
+
+/**************** FILE 8: passengerwindow.cpp ****************/
 #include "passengerwindow.h"
 #include "data.h"
 #include <QVBoxLayout>
@@ -236,8 +254,9 @@ FILE 8
 #include <QPushButton>
 #include <QMessageBox>
 
-QListWidget *list;
+QListWidget *list; // Displays list of available buses
 
+// Constructor: sets up passenger booking UI
 PassengerWindow::PassengerWindow(QWidget *parent)
     : QWidget(parent)
 {
@@ -247,6 +266,7 @@ PassengerWindow::PassengerWindow(QWidget *parent)
     list = new QListWidget();
     QPushButton *book = new QPushButton("Book Seat");
 
+    // Populate list with bus info
     for (int i = 0; i < busCount; i++) {
         list->addItem(
             buses[i].busNumber + " | " +
@@ -258,30 +278,34 @@ PassengerWindow::PassengerWindow(QWidget *parent)
     layout->addWidget(list);
     layout->addWidget(book);
 
+    // Connect booking button to slot
     connect(book, &QPushButton::clicked, this, &PassengerWindow::bookSeat);
 }
 
+// Slot: Book seat for selected bus
 void PassengerWindow::bookSeat() {
     int row = list->currentRow();
-    if (row < 0) return;
+    if (row < 0) return; // No selection made
 
     if (buses[row].bookedSeats < buses[row].totalSeats) {
-        buses[row].bookedSeats++;
+        buses[row].bookedSeats++; // Increment booked seats
         QMessageBox::information(this, "Booked", "Seat Booked Successfully");
     } else {
         QMessageBox::warning(this, "Full", "No Seats Available");
     }
 }
- FILE 9
- #include "mainwindow.h"
+
+/**************** FILE 9: main.cpp ****************/
+#include "mainwindow.h"
 #include <QApplication>
 
+// Entry point for the Qt application
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return a.exec();
+    QApplication a(argc, argv); // Create Qt application
+    MainWindow w;               // Create main menu window
+    w.show();                    // Display window
+    return a.exec();             // Start event loop
 }
 
 
