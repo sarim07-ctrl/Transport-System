@@ -122,4 +122,68 @@ void bookSeat() {
         return;
     }
 
-    cout << "Num
+    cout << "Number of seats to book: ";
+    cin >> seats;
+
+    if (buses[bus].bookedSeats + seats <= buses[bus].totalSeats) {
+        buses[bus].bookedSeats += seats;
+        cout << "Booking successful!\n";
+    } else {
+        cout << "Not enough seats available.\n";
+    }
+}
+
+void cancelSeat() {
+    int bus, seats;
+    cout << "Select Bus Number: ";
+    cin >> bus;
+    bus--;
+
+    cout << "Seats to cancel: ";
+    cin >> seats;
+
+    if (buses[bus].bookedSeats >= seats) {
+        buses[bus].bookedSeats -= seats;
+        cout << "Cancellation successful.\n";
+    } else {
+        cout << "Invalid cancellation.\n";
+    }
+}
+
+void passengerMenu() {
+    int choice;
+    do {
+        cout << "\n--- Passenger Menu ---\n";
+        cout << "1. View Buses\n";
+        cout << "2. Book Seats\n";
+        cout << "3. Cancel Booking\n";
+        cout << "4. Back\n";
+        cout << "Choice: ";
+        cin >> choice;
+
+        if (choice == 1) viewBuses();
+        else if (choice == 2) bookSeat();
+        else if (choice == 3) cancelSeat();
+
+    } while (choice != 4);
+}
+
+/* ---------- MAIN ---------- */
+int main() {
+    int choice;
+    do {
+        cout << "\n=== Transport Management System ===\n";
+        cout << "1. Passenger\n";
+        cout << "2. Driver\n";
+        cout << "3. Exit\n";
+        cout << "Choice: ";
+        cin >> choice;
+
+        if (choice == 1) passengerMenu();
+        else if (choice == 2) driverMenu();
+
+    } while (choice != 3);
+
+    cout << "\nProgram ended.\n";
+    return 0;
+}
