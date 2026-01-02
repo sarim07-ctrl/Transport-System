@@ -9,3 +9,66 @@ TransportSystem/
 ├── passengerwindow.h / .cpp # Booking interface for passengers
 ├── data.h / .cpp            # Shared data structures and logic
 └── README.md                # Project documentation
+
+
+          #Transport Management System – User Manual
+              Overview
+
+This program is a simple console-based transport management system.
+Drivers can register buses and view them.
+Passengers can view buses, book seats, and cancel bookings.
+
+               #How to Run
+
+Compile the program using a C++ compiler.
+
+Run the program.
+
+The main menu will appear with options for Passenger, Driver, and Exit.
+
+Main Menu
+1. Passenger
+2. Driver
+3. Exit
+
+
+Enter the number to choose your role.
+
+Enter 3 to exit the program.
+
+Driver Menu
+1. Register Bus
+2. View My Buses
+3. Back
+
+
+Register Bus: Enter driver info, bus number, type, route, time, and seat capacity.
+
+View My Buses: Shows all registered buses.
+
+Back: Returns to main menu.
+
+Passenger Menu
+1. View Buses
+2. Book Seats
+3. Cancel Booking
+4. Back
+
+
+View Buses: See all buses with number, type, route, time, and available seats.
+
+Book Seats: Select a bus and enter number of seats to book.
+
+Cancel Booking: Select a bus and enter number of seats to cancel.
+
+Back: Returns to main menu.
+
+Notes
+
+Maximum buses: 10
+
+Seats cannot exceed bus capacity
+
+Cannot cancel more seats than booked
+
+Always enter valid numbers
