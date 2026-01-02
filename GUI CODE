@@ -1,0 +1,123 @@
+    FILE 1 
+#include "mainwindow.h"
+#include <QApplication>
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+    return a.exec();
+}
+    FILE 2 
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QMainWindow>
+#include <string>
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
+
+struct Vehicle {
+    std::string name;
+    std::string route;
+    int totalSeats;
+    int bookedSeats;
+};
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+
+private slots:
+    void on_viewButton_clicked();
+    void on_bookButton_clicked();
+    void on_cancelButton_clicked();
+
+private:
+    Ui::MainWindow *ui;
+
+    Vehicle vehicles[10];
+    int vehicleCount;
+
+    void loadSampleData();
+};
+
+#endif
+
+    FILE 3 
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include <QMessageBox>
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+    loadSampleData();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::loadSampleData()
+{
+    vehicleCount = 3;
+
+    vehicles[0] = {"Bus1", "Islamabad-Lahore", 40, 5};
+    vehicles[1] = {"Bus2", "Islamabad-Peshawar", 35, 10};
+    vehicles[2] = {"Van1", "Islamabad-Rawalpindi", 15, 3};
+
+    for (int i = 0; i < vehicleCount; i++) {
+        ui->comboBox->addItem(QString::fromStdString(vehicles[i].name));
+    }
+}
+
+void MainWindow::on_viewButton_clicked()
+{
+    QString info;
+    for (int i = 0; i < vehicleCount; i++) {
+        info += QString::fromStdString(vehicles[i].name) + " - " +
+                QString::fromStdString(vehicles[i].route) +
+                "\nAvailable Seats: " +
+                QString::number(vehicles[i].totalSeats - vehicles[i].bookedSeats) +
+                "\n\n";
+    }
+
+    QMessageBox::information(this, "Available Routes", info);
+}
+
+void MainWindow::on_bookButton_clicked()
+{
+    int index = ui->comboBox->currentIndex();
+
+    if (vehicles[index].bookedSeats < vehicles[index].totalSeats) {
+        vehicles[index].bookedSeats++;
+        QMessageBox::information(this, "Success", "Seat booked successfully!");
+    } else {
+        QMessageBox::warning(this, "Error", "No seats available!");
+    }
+}
+
+void MainWindow::on_cancelButton_clicked()
+{
+    int index = ui->comboBox->currentIndex();
+
+    if (vehicles[index].bookedSeats > 0) {
+        vehicles[index].bookedSeats--;
+        QMessageBox::information(this, "Cancelled", "Booking cancelled.");
+    } else {
+        QMessageBox::warning(this, "Error", "No booking to cancel.");
+    }
+}
+     FILE 4
+mainwindow.ui
