@@ -2,26 +2,28 @@
 #include <string>
 using namespace std;
 
-const int MAX = 10;
+const int MAX = 10;  // Maximum number of buses that can be registered
 
 /* ---------- STRUCTURES ---------- */
 struct Bus {
-    string driverName;
-    string cnic;
-    string license;
-    string busNumber;
-    string busType;
-    string route;
-    string departTime;
-    string arriveTime;
-    int totalSeats;
-    int bookedSeats;
+    string driverName;   // Name of the driver
+    string cnic;         // CNIC of the driver
+    string license;      // Driving license number
+    string busNumber;    // Unique bus number
+    string busType;      // AC or Non-AC
+    string route;        // Bus route (e.g., Islamabad - Lahore)
+    string departTime;   // Departure time
+    string arriveTime;   // Arrival time
+    int totalSeats;      // Total number of seats
+    int bookedSeats;     // Number of seats already booked
 };
 
-Bus buses[MAX];
-int busCount = 0;
+Bus buses[MAX]; // Array to store buses
+int busCount = 0; // Current number of registered buses
 
 /* ---------- DRIVER FUNCTIONS ---------- */
+
+// Function to register a new bus and driver
 void registerDriver() {
     if (busCount >= MAX) {
         cout << "\nMaximum buses registered.\n";
@@ -29,7 +31,7 @@ void registerDriver() {
     }
 
     Bus b;
-    cin.ignore();
+    cin.ignore(); // Clear input buffer
 
     cout << "\n--- Driver Registration ---\n";
     cout << "Driver Name: ";
@@ -59,12 +61,13 @@ void registerDriver() {
     cout << "Total Seat Capacity: ";
     cin >> b.totalSeats;
 
-    b.bookedSeats = 0;
+    b.bookedSeats = 0; // Initially no seats are booked
 
-    buses[busCount++] = b;
+    buses[busCount++] = b; // Add bus to array
     cout << "\nBus registered successfully!\n";
 }
 
+// Driver menu to register bus or view buses
 void driverMenu() {
     int choice;
     do {
@@ -77,22 +80,25 @@ void driverMenu() {
 
         if (choice == 1) registerDriver();
         else if (choice == 2) {
+            // Display all registered buses
             for (int i = 0; i < busCount; i++) {
                 cout << "\nBus " << i + 1 << endl;
                 cout << "Driver: " << buses[i].driverName << endl;
                 cout << "Bus Number: " << buses[i].busNumber << endl;
                 cout << "Route: " << buses[i].route << endl;
                 cout << "Timing: " << buses[i].departTime
-                     << " - " << buses[i].arriveTime << endl;
+                    << " - " << buses[i].arriveTime << endl;
                 cout << "Seats: "
-                     << buses[i].totalSeats - buses[i].bookedSeats
-                     << "/" << buses[i].totalSeats << endl;
+                    << buses[i].totalSeats - buses[i].bookedSeats
+                    << "/" << buses[i].totalSeats << endl;
             }
         }
-    } while (choice != 3);
+    } while (choice != 3); // Loop until driver chooses to go back
 }
 
 /* ---------- PASSENGER FUNCTIONS ---------- */
+
+// Display all available buses to passengers
 void viewBuses() {
     if (busCount == 0) {
         cout << "\nNo buses available.\n";
@@ -105,17 +111,18 @@ void viewBuses() {
         cout << "Type: " << buses[i].busType << endl;
         cout << "Route: " << buses[i].route << endl;
         cout << "Time: " << buses[i].departTime
-             << " - " << buses[i].arriveTime << endl;
+            << " - " << buses[i].arriveTime << endl;
         cout << "Seats Available: "
-             << buses[i].totalSeats - buses[i].bookedSeats << endl;
+            << buses[i].totalSeats - buses[i].bookedSeats << endl;
     }
 }
 
+// Function to book seats on a selected bus
 void bookSeat() {
     int bus, seats;
     cout << "Select Bus Number: ";
     cin >> bus;
-    bus--;
+    bus--; // Adjust index
 
     if (bus < 0 || bus >= busCount) {
         cout << "Invalid bus.\n";
@@ -126,30 +133,34 @@ void bookSeat() {
     cin >> seats;
 
     if (buses[bus].bookedSeats + seats <= buses[bus].totalSeats) {
-        buses[bus].bookedSeats += seats;
+        buses[bus].bookedSeats += seats; // Update booked seats
         cout << "Booking successful!\n";
-    } else {
+    }
+    else {
         cout << "Not enough seats available.\n";
     }
 }
 
+// Function to cancel booked seats
 void cancelSeat() {
     int bus, seats;
     cout << "Select Bus Number: ";
     cin >> bus;
-    bus--;
+    bus--; // Adjust index
 
     cout << "Seats to cancel: ";
     cin >> seats;
 
     if (buses[bus].bookedSeats >= seats) {
-        buses[bus].bookedSeats -= seats;
+        buses[bus].bookedSeats -= seats; // Reduce booked seats
         cout << "Cancellation successful.\n";
-    } else {
+    }
+    else {
         cout << "Invalid cancellation.\n";
     }
 }
 
+// Passenger menu to view buses, book or cancel seats
 void passengerMenu() {
     int choice;
     do {
@@ -165,7 +176,7 @@ void passengerMenu() {
         else if (choice == 2) bookSeat();
         else if (choice == 3) cancelSeat();
 
-    } while (choice != 4);
+    } while (choice != 4); // Loop until passenger chooses to go back
 }
 
 /* ---------- MAIN ---------- */
@@ -179,11 +190,12 @@ int main() {
         cout << "Choice: ";
         cin >> choice;
 
-        if (choice == 1) passengerMenu();
-        else if (choice == 2) driverMenu();
+        if (choice == 1) passengerMenu(); // Go to passenger menu
+        else if (choice == 2) driverMenu(); // Go to driver menu
 
-    } while (choice != 3);
+    } while (choice != 3); // Exit program
 
     cout << "\nProgram ended.\n";
     return 0;
 }
+
